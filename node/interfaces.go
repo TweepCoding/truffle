@@ -23,10 +23,10 @@ type Positioner interface {
 }
 
 type Measurer interface {
-	GetW() float64
-	GetH() float64
-	SetW(float64)
-	SetH(float64)
+	GetW() int32
+	GetH() int32
+	SetW(int32)
+	SetH(int32)
 }
 
 type Collisioner interface {

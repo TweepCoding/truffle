@@ -5,7 +5,6 @@ import (
 
 	"github.com/TweepCoding/truffle"
 	"github.com/TweepCoding/truffle/node"
-	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -14,53 +13,45 @@ The Sprite node is a node that consists of showing an image to the window, based
 position.
 */
 type Sprite struct {
-	Parent              node.Node
-	Children            []node.Node
-	Name                string
-	Texture             *sdl.Texture
-	Width, Height, X, Y float64
-	DrawFunction        func() error
-	UpdateFunction      func(float64) error
+	Parent         node.Node
+	Children       []node.Node
+	Name           string
+	Image          Image
+	X, Y           float64
+	DrawFunction   func() error
+	UpdateFunction func(float64) error
 }
 
 var (
 	_ node.Node        = (*Sprite)(nil)
 	_ node.DrawUpdater = (*Sprite)(nil)
 	_ node.Positioner  = (*Sprite)(nil)
+	_ node.Measurer    = (*Sprite)(nil)
 )
 
 // Creates a new Sprite node. The X and Y values determine their initial position relative to their Parent
-func NewSprite(Path string, X, Y float64) (*Sprite, error) {
+func NewSprite(Image Image, X, Y float64) (*Sprite, error) {
 
-	SpriteNode := &Sprite{}
+	Result := &Sprite{}
 
-	Surface, err := img.Load(Path)
+	Result.X, Result.Y = X, Y
+	Result.Name, Result.Image = "Sprite", Image
+	Result.UpdateFunction, Result.DrawFunction = func(Delta float64) error { return nil }, func() error { return nil }
 
-	if err != nil {
-		return nil, fmt.Errorf("Error loading image from Path %s", Path)
-	}
-
-	SpriteNode.X, SpriteNode.Y = X, Y
-	SpriteNode.Width, SpriteNode.Height, SpriteNode.Name = float64(Surface.W), float64(Surface.H), "Sprite"
-	SpriteNode.Texture, err = truffle.Renderer.CreateTextureFromSurface(Surface)
-	SpriteNode.UpdateFunction, SpriteNode.DrawFunction = func(Delta float64) error { return nil }, func() error { return nil }
-
-	Surface.Free()
-
-	return SpriteNode, nil
+	return Result, nil
 }
 
 func (Sprite *Sprite) Draw() error {
-	x, y := Sprite.X-(Sprite.Width/2), Sprite.Y-(Sprite.Height/2)
+	x, y := int32(Sprite.X)-(Sprite.Image.Width/2), int32(Sprite.Y)-(Sprite.Image.Height/2)
 
 	if Positionable, ok := Sprite.Parent.(node.Positioner); ok {
-		x, y = x+Positionable.GetX(), y+Positionable.GetY()
+		x, y = x+int32(Positionable.GetX()), y+int32(Positionable.GetY())
 	}
 
 	truffle.Renderer.Copy(
-		Sprite.Texture,
-		&sdl.Rect{X: 0, Y: 0, W: int32(Sprite.Width), H: int32(Sprite.Height)},
-		&sdl.Rect{X: int32(x), Y: int32(y), W: int32(Sprite.Width), H: int32(Sprite.Height)},
+		Sprite.Image.Texture,
+		&sdl.Rect{X: 0, Y: 0, W: int32(Sprite.Image.Width), H: Sprite.Image.Width},
+		&sdl.Rect{X: int32(x), Y: int32(y), W: int32(Sprite.Image.Width), H: int32(Sprite.Image.Height)},
 	)
 
 	return Sprite.DrawFunction()
@@ -139,18 +130,18 @@ func (Sprite *Sprite) SetY(y float64) {
 
 // Default Measurable behaivour
 
-func (Sprite *Sprite) GetW() float64 {
-	return Sprite.Width
+func (Sprite *Sprite) GetW() int32 {
+	return Sprite.Image.Width
 }
 
-func (Sprite *Sprite) GetH() float64 {
-	return Sprite.Height
+func (Sprite *Sprite) GetH() int32 {
+	return Sprite.Image.Height
 }
 
-func (Sprite *Sprite) SetW(Width float64) {
-	Sprite.Width = Width
+func (Sprite *Sprite) SetW(Width int32) {
+	Sprite.Image.Width = Width
 }
 
-func (Sprite *Sprite) SetH(Height float64) {
-	Sprite.Height = Height
+func (Sprite *Sprite) SetH(Height int32) {
+	Sprite.Image.Height = Height
 }

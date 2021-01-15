@@ -11,7 +11,7 @@ import (
 Collisionbox is a type of node
 */
 type CollisionBox struct {
-	Width, Height     float64
+	Width, Height     int32
 	Parent            node.Node
 	Children          []node.Node
 	Name              string
@@ -27,14 +27,14 @@ var (
 	_ node.Collisioner = (*CollisionBox)(nil)
 )
 
-func NewCollisionBox(Width, Height float64) (*CollisionBox, error) {
+func NewCollisionBox(Width, Height int32) (*CollisionBox, error) {
 
-	CollisionNode := &CollisionBox{}
+	Result := &CollisionBox{}
 
-	CollisionNode.Width, CollisionNode.Height, CollisionNode.Name = Width, Height, "CollisionBox"
-	CollisionNode.UpdateFunction, CollisionNode.DrawFunction, CollisionNode.CollisionFunction = func(Delta float64) error {return nil}, func() error {return nil}, func(Collisioner node.Collisioner) {}
+	Result.Width, Result.Height, Result.Name = Width, Height, "CollisionBox"
+	Result.UpdateFunction, Result.DrawFunction, Result.CollisionFunction = func(Delta float64) error { return nil }, func() error { return nil }, func(Collisioner node.Collisioner) {}
 
-	return CollisionNode, nil
+	return Result, nil
 }
 
 func (CollisionBox *CollisionBox) Draw() error {
@@ -47,8 +47,8 @@ func (CollisionBox *CollisionBox) Update(Delta float64) error {
 			Pos := CollisionBox.GetParent().(node.Positioner)
 			Pos2 := Child.GetParent().(node.Positioner)
 			Col2 := Child.(node.Collisioner)
-			x1, y1, w1, h1 := Pos.GetX(), Pos.GetY(), CollisionBox.GetW()/2, CollisionBox.GetW()/2
-			x2, y2, w2, h2 := Pos2.GetX(), Pos2.GetY(), Col2.GetW()/2, Col2.GetH()/2
+			x1, y1, w1, h1 := int32(Pos.GetX()), int32(Pos.GetY()), CollisionBox.GetW()/2, CollisionBox.GetW()/2
+			x2, y2, w2, h2 := int32(Pos2.GetX()), int32(Pos2.GetY()), Col2.GetW()/2, Col2.GetH()/2
 			if (y1+h1) > (y2-h2) && (y1-h1) < (y2+h2) && (x1+w1) > (x2-w2) && (x1-w1) < (x2+w2) {
 				CollisionBox.CollisionFunction(Col2)
 			}
@@ -115,18 +115,18 @@ func (CollisionBox *CollisionBox) GetName() string {
 
 // Default Measurable behaivour
 
-func (CollisionBox *CollisionBox) GetW() float64 {
+func (CollisionBox *CollisionBox) GetW() int32 {
 	return CollisionBox.Width
 }
 
-func (CollisionBox *CollisionBox) GetH() float64 {
+func (CollisionBox *CollisionBox) GetH() int32 {
 	return CollisionBox.Height
 }
 
-func (CollisionBox *CollisionBox) SetW(Width float64) {
+func (CollisionBox *CollisionBox) SetW(Width int32) {
 	CollisionBox.Width = Width
 }
 
-func (CollisionBox *CollisionBox) SetH(Height float64) {
+func (CollisionBox *CollisionBox) SetH(Height int32) {
 	CollisionBox.Height = Height
 }

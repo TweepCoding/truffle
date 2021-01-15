@@ -7,14 +7,15 @@ import (
 )
 
 type EmptyNode struct {
-	Parent node.Node
+	Parent   node.Node
 	Children []node.Node
-	Name string
+	Name     string
 }
-var _ node.Node        = (*EmptyNode)(nil)
+
+var _ node.Node = (*EmptyNode)(nil)
 
 func NewEmptyNode() *EmptyNode {
-	return &EmptyNode{Name:"EmptyNode"}
+	return &EmptyNode{Name: "EmptyNode"}
 }
 
 // Default node behaivour
@@ -57,5 +58,3 @@ func (EmptyNode *EmptyNode) GetChildren() []node.Node {
 func (EmptyNode *EmptyNode) GetName() string {
 	return EmptyNode.Name
 }
-
-

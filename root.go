@@ -2,10 +2,10 @@ package truffle
 
 import (
 	"fmt"
-	"sync"
-	"time"
 	"github.com/TweepCoding/truffle/node"
 	"github.com/veandco/go-sdl2/sdl"
+	"sync"
+	"time"
 )
 
 /*
@@ -25,7 +25,7 @@ type Root struct {
 var (
 	RootNode *Root         = nil
 	Renderer *sdl.Renderer = nil
-	_        node.Node          = (*Root)(nil)
+	_        node.Node     = (*Root)(nil)
 )
 
 /*
